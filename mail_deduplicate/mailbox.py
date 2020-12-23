@@ -201,7 +201,7 @@ def create_box(path, box_type=False):
     # Allow the constructor to create a new mail box as we already double-checked
     # beforehand it does not exist.
     box = constructor(path, create=True)
-
+    box._path = "cur"
     logger.debug("Locking box...")
     box.lock()
     return box

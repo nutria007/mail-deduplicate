@@ -1,0 +1,17 @@
+{
+    // Use IntelliSense para saber los atributos posibles.
+    // Mantenga el puntero para ver las descripciones de los existentes atributos.
+    // Para más información, visite: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "Python: Archivo actual",
+            "type": "python",
+            "request": "launch",
+            "program": "run.py",
+            "console": "integratedTerminal",
+            "args": ["-d", "-i","maildir" ,"-s" ,"select-all-but-one","-a" ,"delete-selected","--verbosity=DEBUG","-e" ,"maildir","d:\\mails\\test\\.INBOX.Enviados.test"]
+        }
+    ]
+}

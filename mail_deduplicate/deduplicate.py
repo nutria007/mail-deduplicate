@@ -404,12 +404,15 @@ class Deduplicate:
             # Unique mails are always selected. No need to mobilize the whole
             # DuplicateSet machinery.
             if mail_count == 1:
-                logger.debug("Add unique message to selection.")
                 self.stats["mail_unique"] += 1
-                self.stats["mail_selected"] += 1
                 self.stats["set_single"] += 1
-                candidates = mail_set
-
+                if self.conf.action == "delete-selected":
+                    logger.debug("Skipped deletion of unique mail.")
+                    self.stats["mail_skipped"] += 1
+                else:
+                    logger.debug("Add unique message to selection.")
+                    self.stats["mail_selected"] += 1
+                    candidates = mail_set
             # We need to resort to a selection strategy to discriminate mails
             # within the set.
             else:
