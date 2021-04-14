@@ -22,6 +22,8 @@ from operator import attrgetter
 from pathlib import Path
 import textwrap
 
+import hashlib
+
 import click
 from boltons.cacheutils import cachedproperty
 from tabulate import tabulate
@@ -194,7 +196,10 @@ class DuplicateSet:
 
             # Compare mails on content.
             if self.conf.content_threshold > -1:
-                content_difference = self.diff(mail_a, mail_b)
+                if self.conf.content_threshold == 0:
+                    content_difference = self.hashdiff(mail_a, mail_b)
+                else:
+                    content_difference = self.diff(mail_a, mail_b)
                 logger.debug(
                     f"{mail_a!r} and {mail_b!r} differs by {content_difference} bytes "
                     "in content."
@@ -203,6 +208,14 @@ class DuplicateSet:
                     if self.conf.show_diff:
                         logger.info(self.pretty_diff(mail_a, mail_b))
                     raise ContentDiffAboveThreshold
+
+    def hashdiff(self, mail_a, mail_b):
+        """Return difference in bytes between the hashes of the mail bodys"""
+        if hashlib.sha224("".join(mail_a.body_lines).encode("utf-8")) == hashlib.sha224("".join(mail_b.body_lines).encode("utf-8")):
+            return 1
+        else:
+            return 0
+
 
     def diff(self, mail_a, mail_b):
         """Return difference in bytes between two mails' normalized body.
@@ -409,6 +422,7 @@ class Deduplicate:
                 if self.conf.action == "delete-selected":
                     logger.debug("Skipped deletion of unique mail.")
                     self.stats["mail_skipped"] += 1
+                    candidates = None
                 else:
                     logger.debug("Add unique message to selection.")
                     self.stats["mail_selected"] += 1
